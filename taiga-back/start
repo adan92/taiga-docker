@@ -13,6 +13,19 @@ done
 
 python manage.py migrate --noinput
 
+python3 /checkdb.py
+DB_CHECK_STATUS=$?
+
+if [ $DB_CHECK_STATUS -eq 1 ]; then
+  echo "Failed to connect to database server."
+  exit 1
+elif [ $DB_CHECK_STATUS -eq 2 ]; then
+  echo "Configuring initial database"
+  python3 manage.py loaddata initial_user
+  python3 manage.py loaddata initial_project_templates
+  python3 manage.py loaddata initial_role
+fi
+
 chown -R taiga /usr/local/taiga/media /usr/local/taiga/static /usr/local/taiga/logs
 
 /usr/local/bin/circusd /usr/local/taiga/circus.ini

@@ -1,6 +1,6 @@
 FROM python:3.4
 
-MAINTAINER Hylke Visser <htdvisser@gmail.com>
+MAINTAINER Levi Bostian <levi@curiosityio.com>
 
 # Install dependencies
 RUN \
@@ -13,10 +13,11 @@ RUN \
 RUN \
   mkdir -p /usr/local/taiga && \
   useradd -d /usr/local/taiga taiga && \
-  git clone https://github.com/taigaio/taiga-back.git /usr/local/taiga/taiga-back && \
-  mkdir /usr/local/taiga/media /usr/local/taiga/static /usr/local/taiga/logs && \
-  cd /usr/local/taiga/taiga-back && \
-  git checkout stable && \
+  mkdir /usr/local/taiga/media /usr/local/taiga/static /usr/local/taiga/logs
+
+COPY taiga-back/ /usr/local/taiga/taiga-back
+
+RUN \  
   pip install -r requirements.txt && \
   touch /usr/local/taiga/taiga-back/settings/dockerenv.py && \
   touch /usr/local/taiga/circus.ini

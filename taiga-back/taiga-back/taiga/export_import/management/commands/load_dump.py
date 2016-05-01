@@ -1,0 +1,72 @@
+# Copyright (C) 2014-2016 Andrey Antukh <niwi@niwi.nz>
+# Copyright (C) 2014-2016 Jesús Espino <jespinog@gmail.com>
+# Copyright (C) 2014-2016 David Barragán <bameda@dbarragan.com>
+# Copyright (C) 2014-2016 Alejandro Alonso <alejandro.alonso@kaleidos.net>
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU Affero General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+from django.core.management.base import BaseCommand
+from django.db import transaction
+from django.db.models import signals
+from optparse import make_option
+
+from taiga.base.utils import json
+from taiga.export_import.import services
+from taiga.export_import.exceptions as err
+from taiga.export_import.renderers import ExportRenderer
+from taiga.projects.models import Project
+from taiga.users.models import User
+
+
+class Command(BaseCommand):
+    args = '<dump_file> <owner-email>'
+    help = 'Export a project to json'
+    renderer_context = {"indent": 4}
+    renderer = ExportRenderer()
+    option_list = BaseCommand.option_list + (
+        make_option('--overwrite',
+                    action='store_true',
+                    dest='overwrite',
+                    default=False,
+                    help='Delete project if exists'),
+        )
+
+    def handle(self, *args, **options):
+        data = json.loads(open(args[0], 'r').read())
+        try:
+            with transaction.atomic():
+                if options["overwrite"]:
+                    receivers_back = signals.post_delete.receivers
+                    signals.post_delete.receivers = []
+                    try:
+                        proj = Project.objects.get(slug=data.get("slug", "not a slug"))
+                        proj.tasks.all().delete()
+                        proj.user_stories.all().delete()
+                        proj.issues.all().delete()
+                        proj.memberships.all().delete()
+                        proj.roles.all().delete()
+                        proj.delete()
+                    except Project.DoesNotExist:
+                        pass
+                    signals.post_delete.receivers = receivers_back
+
+                user = User.objects.get(email=args[1])
+                services.store_project_from_dict(data, user)
+        except err.TaigaImportError as e:
+            if e.project:
+                e.project.delete_related_content()
+                e.project.delete()
+
+            print("ERROR:", end=" ")
+            print(e.message)
+            print(services.store.get_errors())
