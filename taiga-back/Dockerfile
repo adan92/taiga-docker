@@ -27,6 +27,7 @@ RUN \
 ADD ./local.py /usr/local/taiga/taiga-back/settings/local.py
 
 # Configure and Start scripts
+COPY checkdb.py /checkdb.py
 ADD ./configure /usr/local/taiga/configure
 ADD ./start /usr/local/taiga/start
 RUN chmod +x /usr/local/taiga/configure /usr/local/taiga/start
@@ -34,6 +35,10 @@ RUN chmod +x /usr/local/taiga/configure /usr/local/taiga/start
 VOLUME /usr/local/taiga/media
 VOLUME /usr/local/taiga/static
 VOLUME /usr/local/taiga/logs
+
+ENV TAIGA_DB_NAME taiga
+ENV TAIGA_DB_USER postgres
+ENV TAIGA_DB_HOST postgres
 
 EXPOSE 8000
 
