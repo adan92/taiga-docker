@@ -1,0 +1,37 @@
+postgres:
+  image: postgres
+  environment:
+    POSTGRES_USER: postgres
+    POSTGRES_DB: taiga
+    POSTGRES_PASSWORD: postgres-user-password
+  volumes:
+    - ./data:/var/lib/postgresql/data
+taigaback:
+  image: curiosityio/taiga-back
+  hostname: dev.example.com
+  environment:
+    TAIGA_DB_NAME: taiga
+    TAIGA_DB_USER: postgres
+    TAIGA_DB_PASSWORD: postgres-user-password
+    TAIGA_DB_HOST: postgres
+    HOSTNAME: dev.example.com
+    SECRET_KEY: random-string-here-for-secret-key
+    EMAIL_HOST: smtp.mailgun.org
+    EMAIL_PORT: 587
+    EMAIL_HOST_USER: example@example.com
+    EMAIL_HOST_PASSWORD: email-password
+  links:
+    - postgres
+  volumes:
+    - ./media:/usr/local/taiga/media
+    - ./static:/usr/local/taiga/static
+    - ./logs:/usr/local/taiga/logs
+taigafront:
+  image: curiosityio/taiga-front-dist
+  hostname: dev.example.com
+  links:
+    - taigaback
+  volumes_from:
+    - taigaback
+  ports:
+    - 0.0.0.0:80:80

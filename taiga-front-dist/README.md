@@ -22,13 +22,17 @@ postgres:
   environment:
     POSTGRES_DB: taiga
     POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: password
+    POSTGRES_PASSWORD: postgres-user-password
   volumes:
     - ./data:/var/lib/postgresql/data
 taigaback:
   image: curiosityio/taiga-back
   hostname: dev.example.com
   environment:
+    TAIGA_DB_NAME: taiga # same as POSTGRES_DB
+    TAIGA_DB_USER: postgres # same as POSTGRES_USER
+    TAIGA_DB_PASSWORD: postgres-user-password # same as POSTGRES_PASSWORD
+    TAIGA_DB_HOST: postgres # honestly, not sure what this points to and why it works
     HOSTNAME: dev.example.com
     SECRET_KEY: examplesecretkey
     EMAIL_USE_TLS: True

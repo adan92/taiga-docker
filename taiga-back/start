@@ -11,10 +11,10 @@ while ! nc -z $POSTGRES_PORT_5432_TCP_ADDR 5432; do
   sleep 1
 done
 
-python manage.py migrate --noinput
-
 python3 /checkdb.py
 DB_CHECK_STATUS=$?
+
+python manage.py migrate --noinput
 
 if [ $DB_CHECK_STATUS -eq 1 ]; then
   echo "Failed to connect to database server."
