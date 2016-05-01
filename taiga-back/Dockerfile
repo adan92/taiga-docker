@@ -7,7 +7,7 @@ RUN \
   apt-get update -qq && \
   apt-get install -y netcat && \
   rm -rf /var/lib/apt/lists/* && \
-  pip install circus gunicorn
+  pip install circus gunicorn taiga-contrib-gogs taiga-contrib-slack
 
 # Install taiga-back
 RUN \

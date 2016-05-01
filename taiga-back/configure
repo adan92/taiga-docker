@@ -64,6 +64,13 @@ DEFAULT_FROM_EMAIL = '${DEFAULT_FROM_EMAIL}'
 DEBUG = ${DEBUG}
 TEMPLATE_DEBUG = ${TEMPLATE_DEBUG}
 PUBLIC_REGISTER_ENABLED = ${PUBLIC_REGISTER_ENABLED}
+
+# Install gogs
+INSTALLED_APPS += ["taiga_contrib_gogs"]
+PROJECT_MODULES_CONFIGURATORS["gogs"] = "taiga_contrib_gogs.services.get_or_generate_config"
+
+# Install slack
+INSTALLED_APPS += ["taiga_contrib_slack"]
 EOL
 
 cat > /usr/local/taiga/circus.ini <<EOL

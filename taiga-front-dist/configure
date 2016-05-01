@@ -31,7 +31,10 @@ cat > /usr/local/taiga/taiga-front-dist/dist/conf.json <<EOL
   "termsOfServiceUrl": null,
   "maxUploadFileSize": null,
   "gitHubClientId": null,
-  "contribPlugins": [ ]
+  "contribPlugins": [
+    "/plugins/gogs/gogs.json",
+    "/plugins/slack/slack.json"
+  ]
 }
 
 EOL
