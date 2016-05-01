@@ -2,11 +2,13 @@
 
 [Taiga](https://taiga.io/) is a project management platform for startups and agile developers & designers who want a simple, beautiful tool that makes work truly enjoyable.
 
-This Docker image can be used for running the Taiga frontend. It works together with the [curiosityio/taiga-back](https://registry.hub.docker.com/u/curiosityio/taiga-back/) image.
+This Docker image can be used for running the Taiga frontend. It works together with the [curiosityio/taiga-back](https://registry.hub.docker.com/r/curiosityio/taiga-back/) image.
+
+Linking the 2 images together provides a full Taiga experience saving to a postgres database, email, and slack and gogs integration.
 
 ## Running
 
-A [curiosityio/taiga-back](https://registry.hub.docker.com/u/curiosityio/taiga-back/) container should be linked to the taiga-front-dist container. Also connect the volumes of this the taiga-back container if you want to serve the static files for the admin panel.
+A [curiosityio/taiga-back](https://registry.hub.docker.com/r/curiosityio/taiga-back/) container should be linked to the taiga-front-dist container. Also connect the volumes of this the taiga-back container if you want to serve the static files for the admin panel.
 
 ```
 docker run --name taiga_front_dist_container_name --link taiga_back_container_name:taigaback --volumes-from taiga_back_container_name curiosityio/taiga-front-dist
@@ -56,6 +58,13 @@ taigafront:
   ports:
     - 0.0.0.0:80:80
 ```
+
+This compose file works well. Make sure to change:
+
+* image `hostname:` properties
+* `EMAIL_` properties. I prefer to use mailgun to send SMTP emails with Taiga.
+* `POSTGRES_DB_PASSWORD` and `TAIGA_DB_PASSWORD`.
+* `SECRET_KEY` to a randomly generated string.
 
 ## SSL Support
 

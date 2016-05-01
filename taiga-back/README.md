@@ -2,11 +2,13 @@
 
 [Taiga](https://taiga.io/) is a project management platform for startups and agile developers & designers who want a simple, beautiful tool that makes work truly enjoyable.
 
-This Docker image can be used for running the Taiga backend. It works together with the [curiosityio/taiga-front-dist](https://registry.hub.docker.com/u/curiosityio/taiga-front-dist/) image.
+This Docker image can be used for running the Taiga backend. It works together with the [curiosityio/taiga-front-dist](https://registry.hub.docker.com/r/curiosityio/taiga-front-dist/) image. 
+
+Linking the 2 images together provides a full Taiga experience saving to a postgres database, email, and slack and gogs integration. 
 
 ## Running
 
-A [postgres](https://registry.hub.docker.com/_/postgres/) container should be linked to the taiga-back container. The taiga-back container will use the ``POSTGRES_USER`` and ``POSTGRES_PASSWORD`` environment variables that are supplied to the postgres container.
+Run the latest docker image along with linking to a [postgres container](https://registry.hub.docker.com/_/postgres/) for storing the data.
 
 ```
 docker run --name taiga_back_container_name --link postgres_container_name:postgres curiosityio/taiga-back
@@ -57,6 +59,13 @@ taigafront:
     - 0.0.0.0:80:80
 ```
 
+This compose file works well. Make sure to change:
+
+* image `hostname:` properties
+* `EMAIL_` properties. I prefer to use mailgun to send SMTP emails with Taiga.
+* `POSTGRES_DB_PASSWORD` and `TAIGA_DB_PASSWORD`. 
+* `SECRET_KEY` to a randomly generated string. 
+
 ## Environment
 
 * ``SECRET_KEY`` defaults to ``"insecurekey"``, but you might want to change this.
@@ -72,9 +81,9 @@ URLs for static files and media files from taiga-back:
 Domain configuration:
 
 * ``HOSTNAME`` no default. Specify your domain name. 
-* ``API_SCHEME`` defaults to ``"http"``. Use ``https`` if ``htdvisser/taiga-front-dist`` is used and SSL enabled.
+* ``API_SCHEME`` defaults to ``"http"``. Use ``https`` if ``curiosityio/taiga-front-dist`` is used and SSL enabled.
 * ``API_DOMAIN`` defaults to ``"$HOSTNAME"``
-* ``FRONT_SCHEME`` defaults to ``"http"``. Use ``https`` if ``htdvisser/taiga-front-dist`` is used and SSL enabled.
+* ``FRONT_SCHEME`` defaults to ``"http"``. Use ``https`` if ``curiosityio/taiga-front-dist`` is used and SSL enabled.
 * ``FRONT_DOMAIN`` defaults to ``"$HOSTNAME"``
 
 Email configuration:
