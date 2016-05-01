@@ -18,6 +18,7 @@ RUN \
 COPY taiga-back/ /usr/local/taiga/taiga-back
 
 RUN \  
+  cd /usr/local/taiga/taiga-back && \
   pip install -r requirements.txt && \
   touch /usr/local/taiga/taiga-back/settings/dockerenv.py && \
   touch /usr/local/taiga/circus.ini
