@@ -4,15 +4,21 @@
 
 This Docker image can be used for running the Taiga frontend. It works together with the [curiosityio/taiga-back](https://registry.hub.docker.com/r/curiosityio/taiga-back/) image.
 
-Linking the 2 images together provides a full Taiga experience saving to a postgres database, email, and slack and gogs integration.
+Linking the 2 images together provides a full **Taiga v2.1** experience:
 
-## Running
+* saving to a persistant postgres database on host machine
+* email integration 
+* slack integration
+* gogs integration
 
-A [curiosityio/taiga-back](https://registry.hub.docker.com/r/curiosityio/taiga-back/) container should be linked to the taiga-front-dist container. Also connect the volumes of this the taiga-back container if you want to serve the static files for the admin panel.
+When Taiga starts up, it saves all data to host machine:
 
-```
-docker run --name taiga_front_dist_container_name --link taiga_back_container_name:taigaback --volumes-from taiga_back_container_name curiosityio/taiga-front-dist
-```
+* `data/` for postgres database data
+* `media/` for taiga media
+* `static/` for static taiga content 
+* `logs/` for taiga logs 
+
+You can backup these volumes using the [dockup](https://github.com/tutumcloud/dockup) docker image. 
 
 ## Docker-compose
 
@@ -34,7 +40,7 @@ taigaback:
     TAIGA_DB_NAME: taiga # same as POSTGRES_DB
     TAIGA_DB_USER: postgres # same as POSTGRES_USER
     TAIGA_DB_PASSWORD: postgres-user-password # same as POSTGRES_PASSWORD
-    TAIGA_DB_HOST: postgres # honestly, not sure what this points to and why it works
+    TAIGA_DB_HOST: postgres # connect to postgres container as the host
     HOSTNAME: dev.example.com
     SECRET_KEY: examplesecretkey
     EMAIL_USE_TLS: True
